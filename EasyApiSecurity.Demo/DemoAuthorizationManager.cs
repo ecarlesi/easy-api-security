@@ -6,7 +6,7 @@ namespace EasyApiSecurity.Demo
     {
         public bool CanAccess(JwtInformations informations, string resource, string method)
         {
-            if (resource == "private" && method == "GET")
+            if (resource == "/private")
             {
                 if (informations != null && informations.Roles != null && informations.Roles.Where(x => x == "admin").FirstOrDefault() != null)
                 {
