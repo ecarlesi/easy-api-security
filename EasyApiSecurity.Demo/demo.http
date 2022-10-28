@@ -1,0 +1,16 @@
+﻿### Test file for Visual Studio Code REST client extension
+
+GET https://localhost:7075/
+
+###
+POST https://localhost:7075/login
+Content-Type: application/json
+
+{
+    "username": "eca",
+    "password": "password"
+}
+
+###
+GET https://localhost:7075/private
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZWNhIiwiZW1haWwiOiJlbWlsaWFuby5jYXJsZXNpQGdtYWlsLmNvbSIsInJvbGVzIjoiW1wiYWRtaW5cIixcImJhY2t1cFwiLFwic3VwZXJoZXJvXCJdIiwibmJmIjoxNjY2OTU3MDY5LCJleHAiOjE2NjY5NjQyNjksImlhdCI6MTY2Njk1NzA2OSwiaXNzIjoiaXNzdWVyIiwiYXVkIjoiYXVkaWVuY2UifQ.Jdtjh1MIYs8SIILg9_nni_lAizSPKwx_PzXXW9foBEU

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyApiSecurity.Demo", "EasyApiSecurity.Demo\EasyApiSecurity.Demo.csproj", "{F28F3A48-6213-4962-A626-ABB8451CECD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyApiSecurity.Core", "EasyApiSecurity.Core\EasyApiSecurity.Core.csproj", "{A7806983-411D-43C2-88F1-82D369D67B20}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F28F3A48-6213-4962-A626-ABB8451CECD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F28F3A48-6213-4962-A626-ABB8451CECD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F28F3A48-6213-4962-A626-ABB8451CECD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F28F3A48-6213-4962-A626-ABB8451CECD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7806983-411D-43C2-88F1-82D369D67B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7806983-411D-43C2-88F1-82D369D67B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7806983-411D-43C2-88F1-82D369D67B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7806983-411D-43C2-88F1-82D369D67B20}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9ECAF605-593E-4322-8297-91E892655A59}
+	EndGlobalSection
+EndGlobal
