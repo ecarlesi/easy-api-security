@@ -36,6 +36,31 @@ bool CanAccess (JwtInformations informations, string resource, string method)
 The first argument contains the information of the user who made the request to the resource (name, email, roles, etc.).
 This information, together with the other two parameters (requested resource and method used) can be used to create a fairly complex and granular access logic. For example, users belonging to a specific role can be allowed to access GET, POST and DELETE, while other users belonging to different roles can only access the same resource in GET.
 
+By implementing customized AuthorizationManagers you will be able to adapt the component to your infrastructure by using different systems for managing credentials (eg database, ldap, Active Directory, external services, files, etc.). 
+The DemoAuthorizationManager class shows a simple implementation valid for demo use only.
+
+```c#
+    public class DemoAuthorizationManager : IAuthorizationManager
+    {
+        public bool CanAccess(JwtInformations informations, string resource, string method)
+        {
+            if (resource == "/private")
+            {
+                if (informations != null && informations.Roles != null && informations.Roles.Where(x => x == "admin").FirstOrDefault() != null)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
+```
+
 If a user is not authorized to access a resource, he will receive an error in response.
 
 To create and obtain a valid token it is necessary to verify the user's credentials, in this demo we use username and password written in the code for brevity. 
