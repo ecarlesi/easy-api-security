@@ -76,3 +76,6 @@ app.MapGet("/private", () => {
 ```
 
 
+Once the repo has been cloned and the solution compiled, start debugging the Demo project. Within the Demo project there is the demo.http file which must be used within Visual Studio Code after downloading the HTTP client extension. This extension allows you to make HTTP calls. Of course it is possible to use other products (eg Postman).
+
+The demo.http file contains three calls to three distinct resources. The first call is to an unsecured resource. It can be called freely without a token.
