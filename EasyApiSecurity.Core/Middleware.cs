@@ -33,7 +33,7 @@ namespace EasyApiSecurity.Core
                 JwtInformations.Current = this.jwt.GetInformations(token);
             }
 
-            bool canAccess = this.context.Storage.CanAccess(JwtInformations.Current, path, method);
+            bool canAccess = this.context.AuthorizationManager.CanAccess(JwtInformations.Current, path, method);
 
             if (!canAccess)
             {

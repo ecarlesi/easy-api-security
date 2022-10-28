@@ -12,7 +12,7 @@ The first step is to configure the Core component
 
 ```c#
 MiddlewareContext middlewareContext = new MiddlewareContext();
-middlewareContext.Storage = new DemoAuthorizationManager();
+middlewareContext.AuthorizationManager = new DemoAuthorizationManager();
 middlewareContext.JwtSettings = new JwtSettings() 
 { 
     Audience = "audience", 
@@ -22,3 +22,16 @@ middlewareContext.JwtSettings = new JwtSettings()
 
 app.UseEas(middlewareContext);
 ```
+
+In this example the information for the creation of the token is written in the code for convenience, in the correct use these values must be taken from a configuration file or even better from an HSM.
+
+Within the configuration we also passed an instance of a class derived from IAuthorizationManager. The CanAccess method must be implemented within this class. 
+The implementation of this method will be responsible for whether or not to authorize the access of a resource by a user.
+This is the signature of the method:
+
+```c#
+bool CanAccess (JwtInformations informations, string resource, string method)
+```
+
+The first argument contains the information of the user who made the request to the resource (name, email, roles, etc.).
+This information, together with the other two parameters (requested resource and method used) can be used to create a fairly complex and granular access logic. For example, users belonging to a specific role can be allowed to access GET, POST and DELETE, while other users belonging to different roles can only access the same resource in GET.

@@ -8,7 +8,7 @@ namespace EasyApiSecurity.Core
 {
     public class MiddlewareContext
     {
-        public IAuthorizationManager Storage { get; set; }
+        public IAuthorizationManager AuthorizationManager { get; set; }
         public JwtSettings JwtSettings { get; set; }
     }
 }

@@ -8,7 +8,7 @@ var app = builder.Build();
 #region configure the middleware
 
 MiddlewareContext middlewareContext = new MiddlewareContext();
-middlewareContext.Storage = new DemoAuthorizationManager();
+middlewareContext.AuthorizationManager = new DemoAuthorizationManager();
 middlewareContext.JwtSettings = new JwtSettings() 
 { 
     Audience = "audience", 
