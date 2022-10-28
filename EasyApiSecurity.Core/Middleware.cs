@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic;
+using System.Net;
+using System;
 using System.Net.Mime;
 using System.Security;
 
@@ -35,12 +37,27 @@ namespace EasyApiSecurity.Core
 
             bool canAccess = this.context.AuthorizationManager.CanAccess(JwtInformations.Current, path, method);
 
-            if (!canAccess)
+            try
             {
-                throw new SecurityException();
-            }
+                if (!canAccess)
+                {
+                    throw new SecurityException();
+                }
 
-            await this.next(context);
+                await this.next(context);
+            }
+            catch (SecurityException e)
+            {
+                context.Response.Clear();
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await context.Response.WriteAsync("Unauthorized");
+            }
+            catch (Exception e)
+            {
+                context.Response.Clear();
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await context.Response.WriteAsync(e.Message); //TODO avoid to show the internal error to the client
+            }
         }
     }
 }
