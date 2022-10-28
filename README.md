@@ -93,4 +93,7 @@ The third call is restricted to using a valid token. Before making the call it i
 
 ![image](https://user-images.githubusercontent.com/195652/198611063-5dc07811-8ab7-4ce4-b051-19d3235253a8.png)
 
-If in response instead of the greeting message we receive an error it could be that we have copied the token wrong, perhaps adding a character, a space and also copying the quotation marks.
+If in response instead of the greeting message we receive an error it could be that we have copied the token wrong, perhaps adding a character, a space and also copying the quotation marks, as in the case below.
+
+![image](https://user-images.githubusercontent.com/195652/198613790-febb166b-ebcf-429b-a89d-67ec42d699cd.png)
+
