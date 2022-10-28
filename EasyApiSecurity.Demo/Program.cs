@@ -7,16 +7,16 @@ var app = builder.Build();
 
 #region configure the middleware
 
-MiddlewareContext configuration = new MiddlewareContext();
-configuration.Storage = new DemoAuthorizationManager();
-configuration.JwtSettings = new JwtSettings() 
+MiddlewareContext middlewareContext = new MiddlewareContext();
+middlewareContext.Storage = new DemoAuthorizationManager();
+middlewareContext.JwtSettings = new JwtSettings() 
 { 
     Audience = "audience", 
     Issuer = "issuer", 
     Secret = "this is super secret" 
 };
 
-app.UseEas(configuration);
+app.UseEas(middlewareContext);
 
 #endregion
 
