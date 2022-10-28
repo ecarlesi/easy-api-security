@@ -78,4 +78,19 @@ app.MapGet("/private", () => {
 
 Once the repo has been cloned and the solution compiled, start debugging the Demo project. Within the Demo project there is the demo.http file which must be used within Visual Studio Code after downloading the HTTP client extension. This extension allows you to make HTTP calls. Of course it is possible to use other products (eg Postman).
 
-The demo.http file contains three calls to three distinct resources. The first call is to an unsecured resource. It can be called freely without a token.
+The demo.http file contains three calls to three distinct resources. 
+
+The first call is to an unsecured resource. It can be called freely without a token.
+
+![image](https://user-images.githubusercontent.com/195652/198606513-b18d5b70-7f21-4477-8397-0d00b5c3b6e0.png)
+
+The second call, also without authorization, is the login. 
+The username and password are specified in the request json (LoginRequest class in the Demo project). If the credentials are correct in the response message (LoginResponse class in the Demo project) we will find a valid JWT token. We will use this token in the next call to authenticate.
+
+![image](https://user-images.githubusercontent.com/195652/198609855-510a9e17-566c-4bd0-9ff5-c1a72ed64955.png)
+
+The third call is restricted to using a valid token. Before making the call it is therefore necessary to replace the text "<your token here>" with the token we obtained after login. Once this is done we can make the call.
+
+![image](https://user-images.githubusercontent.com/195652/198611063-5dc07811-8ab7-4ce4-b051-19d3235253a8.png)
+
+If in response instead of the greeting message we receive an error it could be that we have copied the token wrong, perhaps adding a character, a space and also copying the quotation marks.
