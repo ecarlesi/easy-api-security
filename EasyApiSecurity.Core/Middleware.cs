@@ -24,21 +24,21 @@ namespace EasyApiSecurity.Core
 
         public async Task InvokeAsync(HttpContext context)
         {
-            string method = context.Request.Method;
-            string path = context.Request.Path;
-            string token = context.Request.GetJwtToken();
-
-            JwtInformations.Current = new JwtInformations();
-
-            if (!String.IsNullOrWhiteSpace(token))
-            {
-                JwtInformations.Current = this.jwt.GetInformations(token);
-            }
-
-            bool canAccess = this.context.AuthorizationManager.CanAccess(JwtInformations.Current, path, method);
-
             try
             {
+                string method = context.Request.Method;
+                string path = context.Request.Path;
+                string token = context.Request.GetJwtToken();
+
+                JwtInformations.Current = new JwtInformations();
+
+                if (!String.IsNullOrWhiteSpace(token))
+                {
+                    JwtInformations.Current = this.jwt.GetInformations(token);
+                }
+
+                bool canAccess = this.context.AuthorizationManager.CanAccess(JwtInformations.Current, path, method);
+
                 if (!canAccess)
                 {
                     throw new SecurityException();

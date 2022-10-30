@@ -101,9 +101,11 @@ namespace EasyApiSecurity.Core
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
+                    ValidIssuer = this.settings.Issuer,
+                    ValidAudience = this.settings.Audience, 
                     IssuerSigningKey = new SymmetricSecurityKey(Key),
-                    ValidateIssuer = false, // TODO
-                    ValidateAudience = false, // TODO
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
@@ -137,9 +139,11 @@ namespace EasyApiSecurity.Core
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
+                ValidIssuer = this.settings.Issuer,
+                ValidAudience = this.settings.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(Key),
-                ValidateIssuer = false // TODO,
-                ValidateAudience = false // TODO,
+                ValidateIssuer = true, 
+                ValidateAudience = true, 
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
         }
