@@ -127,3 +127,47 @@ If in response instead of the greeting message we receive an error it could be t
 ## SQL Server Authorization Manager
 The DemoAuthorizationProvider component is clearly not useful in a real project. The EasyApiSecurity.AuthorizationManager.SqlServer project instead implements an IAuthorizationProvider that uses the data present in the SQL Server database to authorize or deny access to the endpoints.
 
+To use this component in the Demo project you need to make the following changes to the project:
+
+1. Add the reference to the project EasyApiSecurity.AuthorizationManager.SqlServer.
+1. Update the code in the Program.cs file.
+1. Create the database and the tables (using the files SQL\create.sql) required. If you already had the database you can just create the tables.
+1. Load the demo data in the tables (using the files SQL\populate.sql).
+
+![image](https://user-images.githubusercontent.com/195652/198870162-85fca9c5-be5b-4a9c-8453-f0f4c46eae19.png)
+
+```c#
+// Modify the connection string according to your systems.
+string connectionString = "Data Source = 192.168.1.10; Initial Catalog = Demo; User Id = demoUser; Password = demoPassword";
+
+MiddlewareContext middlewareContext = new MiddlewareContext();
+middlewareContext.AuthorizationManager = new EasyApiSecurity.AuthorizationManager.SqlServer.AuthorizationManager(connectionString);
+middlewareContext.JwtSettings = new JwtSettings() 
+{ 
+    Audience = "audience", 
+    Issuer = "issuer", 
+    Secret = "this is super secret" 
+};
+
+app.UseEas(middlewareContext);
+```
+
+After making these changes try again to invoke the endpoints using the demo.http file. Everything should continue to work. Now you can manage the permissions configuration from the database. This will make your system much more dynamic and efficient.
+
+The database has this simple structure
+
+![image](https://user-images.githubusercontent.com/195652/198870349-43ad2266-dcaa-4fba-839c-691dcb525bf4.png)
+
+The Role table contains the roles that can be assigned to application users
+![image](https://user-images.githubusercontent.com/195652/198870413-cb7da42c-a631-4fde-9027-563050aab6c5.png)
+
+The Resource table contains the list of endpoints that are exposed by the application and the methods that can be used. The IsPublic column defines whether an endpoint is accessible without authorization. By setting this value, the IAutorizationManager component will not be used to service the client's request.
+
+![image](https://user-images.githubusercontent.com/195652/198870482-b2608098-14a1-4230-b437-8eb0ed0da10d.png)
+
+The ResourceRole table contains the relationships between user roles and the resources they can access.
+
+![image](https://user-images.githubusercontent.com/195652/198870528-7719c8de-5df4-41af-b47b-a2457513bb4f.png)
+
+
+
