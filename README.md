@@ -154,11 +154,12 @@ app.UseEas(middlewareContext);
 
 After making these changes try again to invoke the endpoints using the demo.http file. Everything should continue to work. Now you can manage the permissions configuration from the database. This will make your system much more dynamic and efficient.
 
-The database has this simple structure
+The demo database has this simple structure
 
 ![image](https://user-images.githubusercontent.com/195652/198870349-43ad2266-dcaa-4fba-839c-691dcb525bf4.png)
 
 The Role table contains the roles that can be assigned to application users
+
 ![image](https://user-images.githubusercontent.com/195652/198870413-cb7da42c-a631-4fde-9027-563050aab6c5.png)
 
 The Resource table contains the list of endpoints that are exposed by the application and the methods that can be used. The IsPublic column defines whether an endpoint is accessible without authorization. By setting this value, the IAutorizationManager component will not be used to service the client's request.
