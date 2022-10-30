@@ -5,7 +5,9 @@ The purpose of this project is to allow you to limit access to the resources of 
 The project is based on a middleware that inspects the calls and through the JWT token asks an authorization manager to verify if the user can actually access the resource he requested. 
 The implementation of authorization manager is delegated to an external piece of code, so everyone can manage this type of control as you like.
 
-This solution contains two projects: Core and Demo. The Demo project demonstrates how to use the Core component. 
+This solution contains two projects useful to understand the functioning of the library: Core and Demo. The Demo project demonstrates how to use the Core component. 
+After understanding how the Core project works and how to use it we will see the other projects in the solution.
+
 Below we see how to integrate this component into an ASP.NET Core API project.
 
 The first step is to configure the Core component
@@ -121,4 +123,7 @@ The third call is restricted to using a valid token. Before making the call it i
 If in response instead of the greeting message we receive an error it could be that we have copied the token wrong, perhaps adding a character, a space and also copying the quotation marks, as in the case below.
 
 ![image](https://user-images.githubusercontent.com/195652/198613790-febb166b-ebcf-429b-a89d-67ec42d699cd.png)
+
+## SQL Server Authorization Manager
+The DemoAuthorizationProvider component is clearly not useful in a real project. The EasyApiSecurity.AuthorizationManager.SqlServer project instead implements an IAuthorizationProvider that uses the data present in the SQL Server database to authorize or deny access to the endpoints.
 

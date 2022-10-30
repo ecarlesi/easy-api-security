@@ -8,16 +8,9 @@ namespace EasyApiSecurity.AuthorizationManager.SqlServer
     {
         private string connectionString;
 
-        public AuthorizationManager()
+        public AuthorizationManager(string connectionString)
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
-
-            IConfigurationRoot config = builder.Build();
-
-            connectionString = config.GetConnectionString("SqlServerAuthorizationManager");
+            this.connectionString = connectionString;
         }
 
         public bool CanAccess(JwtInformations informations, string resource, string method)
