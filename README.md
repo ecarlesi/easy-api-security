@@ -129,13 +129,12 @@ The DemoAuthorizationProvider component is clearly not useful in a real project.
 
 To use this component in the Demo project you need to make the following changes to the project:
 
-1. Add the reference to the project EasyApiSecurity.AuthorizationManager.SqlServer.
-1. Update the code in the Program.cs file.
-1. Create the database and the tables (using the files SQL\create.sql) required. If you already had the database you can just create the tables.
-1. Load the demo data in the tables (using the files SQL\populate.sql).
+Add the reference to the project EasyApiSecurity.AuthorizationManager.SqlServer.
 
 ![image](https://user-images.githubusercontent.com/195652/198870162-85fca9c5-be5b-4a9c-8453-f0f4c46eae19.png)
 
+Update the code in the Program.cs file.
+    
 ```c#
 // Modify the connection string according to your systems.
 string connectionString = "Data Source = 192.168.1.10; Initial Catalog = Demo; User Id = demoUser; Password = demoPassword";
@@ -151,6 +150,8 @@ middlewareContext.JwtSettings = new JwtSettings()
 
 app.UseEas(middlewareContext);
 ```
+
+Create the database and the tables (using the files SQL\create.sql) required. If you already had the database you can just create the tables. Load the demo data in the tables (using the files SQL\populate.sql).
 
 After making these changes try again to invoke the endpoints using the demo.http file. Everything should continue to work. Now you can manage the permissions configuration from the database. This will make your system much more dynamic and efficient.
 
