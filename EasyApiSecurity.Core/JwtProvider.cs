@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System.Security.Claims;
 using System.Text;
@@ -8,6 +9,8 @@ namespace EasyApiSecurity.Core
 {
     public class JwtProvider
     {
+        private static readonly int DEFAULT_TOKEN_LIFETIME_IN_MINUTES = 120;
+
         private JwtSettings settings;
 
         private JwtProvider()
@@ -65,7 +68,7 @@ namespace EasyApiSecurity.Core
                 throw new InvalidInformationException();
             }
 
-            DateTime expiration = DateTime.UtcNow.AddMinutes(this.settings.Lifetime == 0 ? 120 : this.settings.Lifetime);
+            DateTime expiration = DateTime.UtcNow.AddMinutes(this.settings.Lifetime == 0 ? DEFAULT_TOKEN_LIFETIME_IN_MINUTES : this.settings.Lifetime);
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
@@ -135,8 +138,8 @@ namespace EasyApiSecurity.Core
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
+                ValidateIssuer = false // TODO,
+                ValidateAudience = false // TODO,
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
         }
