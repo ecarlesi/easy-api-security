@@ -117,20 +117,20 @@ The demo.http file contains three calls to three distinct resources.
 
 The first call is to an unsecured resource. It can be called freely without a token.
 
-![image](https://user-images.githubusercontent.com/195652/198606513-b18d5b70-7f21-4477-8397-0d00b5c3b6e0.png)
+![image](https://user-images.githubusercontent.com/195652/198967444-c7d09517-66ec-47de-9f76-f450166965f0.png)
 
 The second call, also without authorization, is the login. 
 The username and password are specified in the request json (LoginRequest class in the Demo project). If the credentials are correct in the response message (LoginResponse class in the Demo project) we will find a valid JWT token. We will use this token in the next call to authenticate.
 
-![image](https://user-images.githubusercontent.com/195652/198609855-510a9e17-566c-4bd0-9ff5-c1a72ed64955.png)
+![image](https://user-images.githubusercontent.com/195652/198967519-30f8720e-312d-4d0e-a7d5-cdb68bedcea2.png)
 
 The third call is restricted to using a valid token. Before making the call it is therefore necessary to replace the text ***your-token-here*** with the token we obtained after login. Once this is done we can make the call.
 
-![image](https://user-images.githubusercontent.com/195652/198611063-5dc07811-8ab7-4ce4-b051-19d3235253a8.png)
+![image](https://user-images.githubusercontent.com/195652/198967591-a2f81fcb-0b03-4404-9ab7-931344070e57.png)
 
 If in response instead of the greeting message we receive an error it could be that we have copied the token wrong, perhaps adding a character, a space and also copying the quotation marks, as in the case below.
 
-![image](https://user-images.githubusercontent.com/195652/198613790-febb166b-ebcf-429b-a89d-67ec42d699cd.png)
+![image](https://user-images.githubusercontent.com/195652/198967661-5013c43a-23bd-430f-afaf-9a66205f1325.png)
 
 ## SQL Server Authorization Manager
 The DemoAuthorizationProvider component is clearly not useful in a real project. The EasyApiSecurity.AuthorizationManager.SqlServer project instead implements an IAuthorizationProvider that uses the data present in the SQL Server database to authorize or deny access to the endpoints.
