@@ -116,7 +116,7 @@ The username and password are specified in the request json (LoginRequest class 
 
 ![image](https://user-images.githubusercontent.com/195652/198609855-510a9e17-566c-4bd0-9ff5-c1a72ed64955.png)
 
-The third call is restricted to using a valid token. Before making the call it is therefore necessary to replace the text "<your token here>" with the token we obtained after login. Once this is done we can make the call.
+The third call is restricted to using a valid token. Before making the call it is therefore necessary to replace the text ***<your token here>*** with the token we obtained after login. Once this is done we can make the call.
 
 ![image](https://user-images.githubusercontent.com/195652/198611063-5dc07811-8ab7-4ce4-b051-19d3235253a8.png)
 
