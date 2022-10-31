@@ -9,10 +9,8 @@ var app = builder.Build();
 
 #region configure the middleware
 
-string connectionString = "Data Source = 192.168.1.10; Initial Catalog = Demo; User Id = demoUser; Password = demoPassword";
-
 MiddlewareContext middlewareContext = new MiddlewareContext();
-middlewareContext.AuthorizationManager = new EasyApiSecurity.AuthorizationManager.SqlServer.AuthorizationManager(connectionString);
+middlewareContext.AuthorizationManager = new DemoAuthorizationManager();
 middlewareContext.JwtSettings = new JwtSettings()
 {
     Audience = "audience",
@@ -20,8 +18,6 @@ middlewareContext.JwtSettings = new JwtSettings()
     KeyType = KeyType.SymmetricKey,
     Key = Encoding.Default.GetBytes("this is super secret")
 };
-
-middlewareContext.ErrorHandlerBehavior = MiddlewareErrorHandlerBehavior.ShowGeneric;
 
 app.UseEas(middlewareContext);
 
