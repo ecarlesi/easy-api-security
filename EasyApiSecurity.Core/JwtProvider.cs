@@ -1,8 +1,10 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace EasyApiSecurity.Core
@@ -53,14 +55,6 @@ namespace EasyApiSecurity.Core
             return instance;
         }
 
-        private byte[] Key 
-        {
-            get 
-            {
-                return Encoding.ASCII.GetBytes(this.settings.Secret);
-            }
-        }
-
         public string CreateToken(JwtInformations informations)
         {
             if (informations == null)
@@ -82,7 +76,7 @@ namespace EasyApiSecurity.Core
                 }),
                 IssuedAt = DateTime.UtcNow,
                 Expires = expiration,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Key), SecurityAlgorithms.HmacSha256Signature),
+                SigningCredentials = new SigningCredentials(this.GetSecurityKey(), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = this.settings.Issuer,
                 Audience = this.settings.Audience
             };
@@ -103,7 +97,7 @@ namespace EasyApiSecurity.Core
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = this.settings.Issuer,
                     ValidAudience = this.settings.Audience, 
-                    IssuerSigningKey = new SymmetricSecurityKey(Key),
+                    IssuerSigningKey = this.GetSecurityKey(),
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ClockSkew = TimeSpan.Zero
@@ -141,11 +135,27 @@ namespace EasyApiSecurity.Core
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = this.settings.Issuer,
                 ValidAudience = this.settings.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Key),
+                IssuerSigningKey = this.GetSecurityKey(),
                 ValidateIssuer = true, 
                 ValidateAudience = true, 
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
+        }
+
+        private SecurityKey GetSecurityKey()
+        {
+            if (settings.KeyType == KeyType.SymmetricKey)
+            {
+                return new SymmetricSecurityKey(this.settings.Key);
+            }
+            else if (settings.KeyType == KeyType.Certificate)
+            {
+                return new X509SecurityKey(new X509Certificate2(this.settings.Key));
+            }
+            else
+            {
+                throw new InvalidDataException();
+            }
         }
 
         private static string GetClaimValue(JwtSecurityToken token, string claimName)
