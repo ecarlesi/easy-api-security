@@ -21,7 +21,7 @@ namespace EasyApiSecurity.Core
 
         public static string GetJwtToken(this HttpRequest request)
         {
-            if (request == null)
+            if (request == null || request.Headers == null)
             {
                 return String.Empty;
             }

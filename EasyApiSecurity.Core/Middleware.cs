@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
 using System.Net;
-using System;
-using System.Net.Mime;
 using System.Security;
 
 namespace EasyApiSecurity.Core
@@ -15,7 +12,7 @@ namespace EasyApiSecurity.Core
         private MiddlewareContext context;
         private JwtProvider jwt;
 
-        public Middleware(RequestDelegate next, IConfiguration configuration, IOptions<MiddlewareContext> options)
+        public Middleware(RequestDelegate next, IOptions<MiddlewareContext> options)
         {
             this.next = next;
             this.context = options.Value;
@@ -43,8 +40,10 @@ namespace EasyApiSecurity.Core
                 {
                     throw new SecurityException();
                 }
-
-                await this.next(context);
+                else
+                {
+                    await this.next(context);
+                }
             }
             catch (SecurityException e)
             {
@@ -54,9 +53,19 @@ namespace EasyApiSecurity.Core
             }
             catch (Exception e)
             {
-                context.Response.Clear();
-                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                await context.Response.WriteAsync(e.Message); //TODO avoid to show the internal error to the client
+                if (this.context.ErrorHandlerBehavior == MiddlewareErrorHandlerBehavior.Throw)
+                {
+                    throw;
+                }
+                else
+                {
+                    string message = this.context.ErrorHandlerBehavior == MiddlewareErrorHandlerBehavior.ShowMessage ? e.Message : "Something bad happened :(";
+
+                    context.Response.Clear();
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    await context.Response.WriteAsync(message);
+
+                }
             }
         }
     }

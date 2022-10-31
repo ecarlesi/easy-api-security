@@ -21,7 +21,25 @@ namespace EasyApiSecurity.Core
 
         private JwtProvider(JwtSettings settings)
         {
-            //TODO check settings
+            if (settings == null)
+            {
+                throw new ArgumentException("settings is null");
+            }
+
+            if (String.IsNullOrWhiteSpace(settings.Issuer))
+            {
+                throw new ArgumentException("Issuer is empty");
+            }
+
+            if (String.IsNullOrWhiteSpace(settings.Audience))
+            {
+                throw new ArgumentException("Audience is empty");
+            }
+
+            if (settings.Key == null || settings.Key.Length == 0)
+            {
+                throw new ArgumentException("Invalid key");
+            }
 
             this.settings = settings;
         }
