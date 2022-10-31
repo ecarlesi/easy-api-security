@@ -13,4 +13,4 @@ Content-Type: application/json
 
 ###
 GET https://localhost:7075/private
-Authorization: Bearer <your token here>
+Authorization: Bearer your-token-here
