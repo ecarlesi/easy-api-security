@@ -25,7 +25,7 @@ public class MongoAuthorizationManager : IAuthorizationManager
             easyApiSecurityMongoDatabaseSettings.Value.ResourcesCollectionName);
     }
 
-    public bool CanAccess(JwtInformations informations, string resource, string method)
+    public bool CanAccess(JwtInformations? informations, string resource, string method)
     {
         var cacheKey = $"{method}@{resource}";
 
@@ -48,7 +48,7 @@ public class MongoAuthorizationManager : IAuthorizationManager
             return false;
         }
 
-        return informations.Roles.Intersect(cacheItem.Roles).Any();
+        return informations!.Roles!.Intersect(cacheItem.Roles).Any();
     }
 
     private CacheItem? LoadCacheItemFromDatabase(string resource, string method)

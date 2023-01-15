@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Security;
@@ -8,15 +7,15 @@ namespace EasyApiSecurity.Core
 {
     public class Middleware
     {
-        private readonly RequestDelegate next;
-        private MiddlewareContext context;
-        private JwtProvider jwt;
+        private readonly RequestDelegate _next;
+        private readonly MiddlewareContext _context;
+        private readonly JwtProvider _jwt;
 
         public Middleware(RequestDelegate next, IOptions<MiddlewareContext> options)
         {
-            this.next = next;
-            this.context = options.Value;
-            this.jwt = JwtProvider.Create(this.context.JwtSettings);
+            _next = next;
+           _context = options.Value;
+            _jwt = JwtProvider.Create(this._context.JwtSettings);
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -29,23 +28,21 @@ namespace EasyApiSecurity.Core
 
                 JwtInformations.Current = new JwtInformations();
 
-                if (!String.IsNullOrWhiteSpace(token))
+                if (!string.IsNullOrWhiteSpace(token))
                 {
-                    JwtInformations.Current = this.jwt.GetInformations(token);
+                    JwtInformations.Current = this._jwt.GetInformations(token);
                 }
 
-                bool canAccess = this.context.AuthorizationManager.CanAccess(JwtInformations.Current, path, method);
+                bool canAccess = this._context.AuthorizationManager.CanAccess(JwtInformations.Current, path, method);
 
                 if (!canAccess)
                 {
                     throw new SecurityException();
                 }
-                else
-                {
-                    await this.next(context);
-                }
+
+                await this._next(context);
             }
-            catch (SecurityException e)
+            catch (SecurityException)
             {
                 context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -53,18 +50,21 @@ namespace EasyApiSecurity.Core
             }
             catch (Exception e)
             {
-                if (this.context.ErrorHandlerBehavior == MiddlewareErrorHandlerBehavior.Throw)
+                switch (_context.ErrorHandlerBehavior)
                 {
-                    throw;
-                }
-                else
-                {
-                    string message = this.context.ErrorHandlerBehavior == MiddlewareErrorHandlerBehavior.ShowMessage ? e.Message : "Something bad happened :(";
+                    case MiddlewareErrorHandlerBehavior.Throw:
+                        throw;
+                    case MiddlewareErrorHandlerBehavior.ShowMessage:
+                    case MiddlewareErrorHandlerBehavior.ShowGeneric:
+                    default:
+                    {
+                        string message = this._context.ErrorHandlerBehavior == MiddlewareErrorHandlerBehavior.ShowMessage ? e.Message : "Something bad happened :(";
 
-                    context.Response.Clear();
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    await context.Response.WriteAsync(message);
-
+                        context.Response.Clear();
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        await context.Response.WriteAsync(message);
+                        break;
+                    }
                 }
             }
         }

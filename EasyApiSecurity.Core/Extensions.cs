@@ -1,12 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyApiSecurity.Core
 {
@@ -19,26 +13,21 @@ namespace EasyApiSecurity.Core
             return builder.UseMiddleware<Middleware>(Options.Create(middlewareConfiguration));
         }
 
-        public static string GetJwtToken(this HttpRequest request)
+        public static string GetJwtToken(this HttpRequest? request)
         {
-            if (request == null || request.Headers == null)
+            if (request?.Headers == null)
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             if (!request.Headers.ContainsKey("Authorization"))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             string authorization = request.Headers["Authorization"].ToString();
 
-            if (String.IsNullOrEmpty(authorization))
-            {
-                return String.Empty;
-            }
-
-            return authorization.Split(' ').Last();
+            return string.IsNullOrEmpty(authorization) ? string.Empty : authorization.Split(' ').Last();
         }
     }
 }

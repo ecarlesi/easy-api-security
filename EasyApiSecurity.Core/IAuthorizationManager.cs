@@ -2,6 +2,6 @@
 {
     public interface IAuthorizationManager
     {
-        bool CanAccess(JwtInformations informations, string resource, string method);
+        bool CanAccess(JwtInformations? informations, string resource, string method);
     }
 }

@@ -26,25 +26,20 @@ app.UseEas(middlewareContext);
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/private", () => Results.Ok($"Hello {JwtInformations.Current.Name}!"));
+app.MapGet("/private", () => Results.Ok($"Hello {JwtInformations.Current!.Name}!"));
 
 app.MapPost("/login", ([FromBody]LoginRequest loginRequest)  => {
-
-    if (loginRequest.Username == "eca" && loginRequest.Password == "password")
+    if (loginRequest.Username != "eca" || loginRequest.Password != "password") return Results.Unauthorized();
+    JwtInformations informations = new JwtInformations
     {
-        JwtInformations informations = new JwtInformations
-        {
-            Name = "eca",
-            Email = "emiliano.carlesi@gmail.com",
-            Roles = new[] { "admin", "backup", "superhero" }
-        };
+        Name = "eca",
+        Email = "emiliano.carlesi@gmail.com",
+        Roles = new[] { "admin", "backup", "superhero" }
+    };
 
-        string token = JwtProvider.Instance().CreateToken(informations);
+    string token = JwtProvider.Instance().CreateToken(informations);
 
-        return Results.Json(new LoginResponse() { Token = token });
-    }
-
-    return Results.Unauthorized();
+    return Results.Json(new LoginResponse() { Token = token });
 
 });
 

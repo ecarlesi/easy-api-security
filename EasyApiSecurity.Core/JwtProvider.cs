@@ -1,37 +1,30 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace EasyApiSecurity.Core
 {
     public class JwtProvider
     {
-        private static readonly int DEFAULT_TOKEN_LIFETIME_IN_MINUTES = 120;
+        private const int DefaultTokenLifetimeInMinutes = 120;
 
-        private JwtSettings settings;
+        private readonly JwtSettings? _settings;
 
-        private JwtProvider()
-        { 
-        }
-
-        private JwtProvider(JwtSettings settings)
+        private JwtProvider(JwtSettings? settings)
         {
             if (settings == null)
             {
                 throw new ArgumentException("settings is null");
             }
 
-            if (String.IsNullOrWhiteSpace(settings.Issuer))
+            if (string.IsNullOrWhiteSpace(settings.Issuer))
             {
                 throw new ArgumentException("Issuer is empty");
             }
 
-            if (String.IsNullOrWhiteSpace(settings.Audience))
+            if (string.IsNullOrWhiteSpace(settings.Audience))
             {
                 throw new ArgumentException("Audience is empty");
             }
@@ -41,36 +34,32 @@ namespace EasyApiSecurity.Core
                 throw new ArgumentException("Invalid key");
             }
 
-            this.settings = settings;
+            _settings = settings;
         }
 
-        private static JwtProvider instance;
-        private static object LOCK = new object();
+        private static JwtProvider? _instance;
+        private static readonly object Lock = new object();
 
-        public static JwtProvider Create(JwtSettings settings)
+        public static JwtProvider Create(JwtSettings? settings)
         {
-            if (instance == null)
+            if (_instance != null) return _instance;
+            
+            lock (Lock)
             {
-                lock (LOCK)
-                {
-                    if (instance == null)
-                    {
-                        instance = new JwtProvider(settings);
-                    }
-                }
+                _instance ??= new JwtProvider(settings);
             }
 
-            return instance;
+            return _instance;
         }
 
         public static JwtProvider Instance()
         {
-            if (instance == null)
+            if (_instance == null)
             {
-                throw new JwtProviderNotInizializedException();
+                throw new JwtProviderNotInitializedException();
             }
 
-            return instance;
+            return _instance;
         }
 
         public string CreateToken(JwtInformations informations)
@@ -80,23 +69,23 @@ namespace EasyApiSecurity.Core
                 throw new InvalidInformationException();
             }
 
-            DateTime expiration = DateTime.UtcNow.AddMinutes(this.settings.Lifetime == 0 ? DEFAULT_TOKEN_LIFETIME_IN_MINUTES : this.settings.Lifetime);
+            DateTime expiration = DateTime.UtcNow.AddMinutes(_settings!.Lifetime == 0 ? DefaultTokenLifetimeInMinutes : this._settings.Lifetime);
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                Subject = new ClaimsIdentity(new[]
                 {
-                     new Claim("name", informations.Name),
-                     new Claim("email", informations.Email),
-                     new Claim("roles", JsonHelper.Serialize(informations.Roles)),
+                     new Claim("name", informations.Name!),
+                     new Claim("email", informations.Email!),
+                     new Claim("roles", JsonHelper.Serialize(informations.Roles!)),
                 }),
                 IssuedAt = DateTime.UtcNow,
                 Expires = expiration,
                 SigningCredentials = new SigningCredentials(this.GetSecurityKey(), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = this.settings.Issuer,
-                Audience = this.settings.Audience
+                Issuer = this._settings.Issuer,
+                Audience = this._settings.Audience
             };
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
@@ -104,7 +93,7 @@ namespace EasyApiSecurity.Core
             return tokenHandler.WriteToken(token);
         }
 
-        public JwtInformations GetInformations(string token)
+        public JwtInformations? GetInformations(string token)
         {
             try
             {
@@ -113,24 +102,23 @@ namespace EasyApiSecurity.Core
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = this.settings.Issuer,
-                    ValidAudience = this.settings.Audience, 
+                    ValidIssuer = _settings?.Issuer,
+                    ValidAudience = _settings?.Audience, 
                     IssuerSigningKey = this.GetSecurityKey(),
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
-
-                JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
+                }, out _);
 
                 JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
                 SecurityToken jsonToken = handler.ReadToken(token);
-                JwtSecurityToken tokenS = jsonToken as JwtSecurityToken;
+                JwtSecurityToken? tokenS = jsonToken as JwtSecurityToken;
 
-                JwtInformations informations = new JwtInformations();
-
-                informations.Name = GetClaimValue(tokenS, "name");
-                informations.Email = GetClaimValue(tokenS, "email");
+                JwtInformations? informations = new JwtInformations
+                {
+                    Name = GetClaimValue(tokenS, "name"),
+                    Email = GetClaimValue(tokenS, "email")
+                };
 
                 string json = GetClaimValue(tokenS, "roles");
 
@@ -151,41 +139,30 @@ namespace EasyApiSecurity.Core
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = this.settings.Issuer,
-                ValidAudience = this.settings.Audience,
+                ValidIssuer = _settings?.Issuer,
+                ValidAudience = _settings?.Audience,
                 IssuerSigningKey = this.GetSecurityKey(),
                 ValidateIssuer = true, 
                 ValidateAudience = true, 
                 ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
+            }, out _);
         }
 
         private SecurityKey GetSecurityKey()
         {
-            if (settings.KeyType == KeyType.SymmetricKey)
+            return _settings?.KeyType switch
             {
-                return new SymmetricSecurityKey(this.settings.Key);
-            }
-            else if (settings.KeyType == KeyType.Certificate)
-            {
-                return new X509SecurityKey(new X509Certificate2(this.settings.Key));
-            }
-            else
-            {
-                throw new InvalidDataException();
-            }
+                KeyType.SymmetricKey => new SymmetricSecurityKey(this._settings.Key),
+                KeyType.Certificate => new X509SecurityKey(new X509Certificate2(this._settings.Key)),
+                _ => throw new InvalidDataException()
+            };
         }
 
-        private static string GetClaimValue(JwtSecurityToken token, string claimName)
+        private static string GetClaimValue(JwtSecurityToken? token, string claimName)
         {
-            Claim c = token.Claims.Where(x => x.Type == claimName).FirstOrDefault();
+            Claim? c = token?.Claims.FirstOrDefault(x => x.Type == claimName);
 
-            if (c == null)
-            {
-                return "";
-            }
-
-            return c.Value;
+            return c == null ? "" : c.Value;
         }
     }
 }
