@@ -126,7 +126,7 @@ namespace EasyApiSecurity.Core
 
                 return informations;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new SecurityException();
             }
