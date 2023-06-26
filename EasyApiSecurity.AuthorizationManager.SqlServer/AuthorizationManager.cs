@@ -4,56 +4,43 @@ using System.Data.SqlClient;
 
 namespace EasyApiSecurity.AuthorizationManager.SqlServer
 {
-    public class AuthorizationManager : Core.IAuthorizationManager
+    public class AuthorizationManager : IAuthorizationManager
     {
-        private MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+        private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
-        private string connectionString;
+        private readonly string _connectionString;
 
         public AuthorizationManager(string connectionString)
         {
-            this.connectionString = connectionString;
+            _connectionString = connectionString;
         }
 
-        public bool CanAccess(JwtInformations informations, string resource, string method)
+        public bool CanAccess(JwtInformations? informations, string resource, string method)
         {
             string cacheKey = $"{method}@{resource}";
 
-            CacheItem cacheItem = cache.Get<CacheItem>(cacheKey);
+            CacheItem? cacheItem = _cache.Get<CacheItem>(cacheKey);
 
             if (cacheItem == null)
             {
                 cacheItem = LoadCacheItemFromDatabase(resource, method);
 
-                cache.Set<CacheItem>(cacheKey, cacheItem, DateTime.Now.AddSeconds(60));
+                _cache.Set(cacheKey, cacheItem, DateTime.Now.AddSeconds(60));
             }
 
-            if (cacheItem.IsPublic)
+            if (cacheItem!.IsPublic)
             {
                 return true;
             }
 
-            if (informations.Roles != null)
-            {
-                foreach (string role in informations.Roles)
-                {
-                    foreach (string r in cacheItem.Roles)
-                    {
-                        if (role == r)
-                        {
-                            return true;
-                        }
-                    }
-                }
+            if (informations!.Roles == null) return false;
 
-            }
-
-            return false;
+            return (from role in informations.Roles from r in cacheItem.Roles where role == r select role).Any();
         }
 
         private CacheItem? LoadCacheItemFromDatabase(string resource, string method)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
@@ -114,8 +101,8 @@ and s. method = @m
 
 internal class CacheItem
 {
-    internal string Path { get; set; }
-    internal string Method { get; set; }
+    internal string? Path { get; set; }
+    internal string? Method { get; set; }
     internal bool IsPublic { get; set; }
-    internal List<string> Roles { get; set; }
+    internal List<string>? Roles { get; set; }
 }
